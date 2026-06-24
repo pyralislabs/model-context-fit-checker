@@ -86,13 +86,13 @@ importers:
 
   packages/vram-engine:
     dependencies:
+      '@localairigs/model-context-fit-core':
+        specifier: workspace:*
+        version: link:../core
       zod:
         specifier: ^3.24.0
         version: 3.25.76
     devDependencies:
-      '@localairigs/model-context-fit-core':
-        specifier: workspace:*
-        version: link:../core
       ajv:
         specifier: ^8.20.0
         version: 8.20.0
