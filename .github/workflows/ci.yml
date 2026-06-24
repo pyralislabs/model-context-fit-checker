@@ -28,5 +28,9 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test:coverage
       - run: pnpm build
+      - name: Validate data
+        run: pnpm --filter @localairigs/model-context-fit-vram-engine validate:data
+      - run: pnpm test:integration
       - run: pnpm pack:check
+      - run: pnpm verify:standalone
       - run: pnpm audit --prod --audit-level high

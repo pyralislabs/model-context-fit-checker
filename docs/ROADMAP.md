@@ -11,8 +11,7 @@ required. This supersedes the original canonical-dependency gate.
 
 ### Milestone 1 — Capture Migration Evidence
 
-Migration fixture structure created. Attribution documented in
-`THIRD_PARTY_NOTICES.md`. Sibling checkout not available at migration time;
+Migration fixture structure created. Sibling checkout not available at migration time;
 formulas implemented from documented contracts.
 
 ### Milestone 2 — Create packages/vram-engine
@@ -59,8 +58,12 @@ Architecture decision recorded in `docs/adr/`.
 
 ## Current Status
 
-All 106 tests pass (0 skipped). Format, lint, typecheck, build, and
-standalone verifier all pass.
+All 138 tests pass (0 skipped) across 14 test files. Format, lint, typecheck,
+build, coverage, integration, pack check, standalone verifier, and security
+audit all pass. Data validation (`validate:data`) verifies all catalog records
+against JSON schemas. Pack check verifies tarball structure, declarations,
+and no leaked file: references. Isolated consumer tarball installation is
+verified at publish time via the release workflow.
 
 Packages:
 

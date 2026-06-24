@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { execSync } from "node:child_process";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -24,6 +25,11 @@ const data: unknown = ${json};
 export default data;
 `;
   writeFileSync(tsPath, content, "utf-8");
+  try {
+    execSync(`prettier --write "${tsPath}"`, { stdio: "pipe" });
+  } catch {
+    // prettier may not be available; skip formatting
+  }
   console.log(`Generated src/generated/${name}.ts`);
 }
 

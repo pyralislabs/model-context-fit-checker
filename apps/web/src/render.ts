@@ -17,11 +17,11 @@ export function clearResult(
 ): void {
   if (resultDiv) {
     resultDiv.hidden = true;
-    resultDiv.innerHTML = "";
+    resultDiv.replaceChildren();
   }
   if (errorDiv) {
     errorDiv.hidden = true;
-    errorDiv.innerHTML = "";
+    errorDiv.replaceChildren();
   }
 }
 
@@ -34,9 +34,9 @@ export function renderLoading(resultDiv: HTMLElement | null): void {
 export function renderError(errorDiv: HTMLElement | null, message: string): void {
   if (!errorDiv) return;
   errorDiv.hidden = false;
+  errorDiv.replaceChildren();
   const p = document.createElement("p");
   p.textContent = message;
-  errorDiv.innerHTML = "";
   errorDiv.appendChild(p);
 }
 
@@ -47,7 +47,7 @@ export function renderResult(
 ): void {
   if (!resultDiv) return;
   resultDiv.hidden = false;
-  resultDiv.innerHTML = "";
+  resultDiv.replaceChildren();
 
   const container = document.createElement("div");
   container.className = "result-container";
@@ -85,7 +85,22 @@ export function renderResult(
     `${fmtInt(result.search.alignedMinContextTokens)} – ${fmtInt(result.search.alignedMaxContextTokens)}`,
   );
   addRow("Granularity", fmtInt(result.search.granularity));
-  addRow("Provider", `${result.provider.packageName} v${result.provider.packageVersion}`);
+
+  const versionsDetail = document.createElement("details");
+  const versionsSummary = document.createElement("summary");
+  versionsSummary.textContent = `Provider: ${result.provider.packageName} v${result.provider.packageVersion}`;
+  versionsDetail.appendChild(versionsSummary);
+  const versionsList = document.createElement("ul");
+  const addVersion = (label: string, val: string) => {
+    const li = document.createElement("li");
+    li.textContent = `${label}: ${val}`;
+    versionsList.appendChild(li);
+  };
+  addVersion("Package version", result.provider.packageVersion);
+  addVersion("Assumption version", result.provider.assumptionVersion);
+  addVersion("Dataset version", result.provider.datasetVersion);
+  versionsDetail.appendChild(versionsList);
+  container.appendChild(versionsDetail);
 
   if (result.status === "fits" && result.result.estimate) {
     addRow("Required VRAM", `${fmtGiB(result.result.estimate.requiredVramBytes)} GiB`);
@@ -112,7 +127,12 @@ export function renderResult(
     const boundary = document.createElement("p");
     boundary.className = "boundary";
     if (result.boundary.kind === "vram") {
-      boundary.textContent = `Boundary: next aligned context (${fmtInt(result.boundary.nextContextTokens)} tokens) exceeds the usable budget.`;
+      const nextCtx = result.boundary.nextContextTokens;
+      const nextEst = result.boundary.nextEstimate;
+      const boundaryText = nextEst
+        ? `Boundary: next aligned context (${fmtInt(nextCtx)} tokens) requires ${fmtGiB(nextEst.requiredVramBytes)} GiB, exceeding the usable budget of ${fmtGiB(result.budget.usableVramBytes)} GiB.`
+        : `Boundary: next aligned context (${fmtInt(nextCtx)} tokens) exceeds the usable budget.`;
+      boundary.textContent = boundaryText;
     } else {
       const capLabels: Record<string, string> = {
         model_limit: "Model limit reached",

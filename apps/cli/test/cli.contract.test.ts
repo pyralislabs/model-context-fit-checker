@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { spawnSync } from "node:child_process";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,7 +22,7 @@ function runCli(args: string[]): { stdout: string; stderr: string; status: numbe
 
 const binaryExists = existsSync(cliPath);
 
-function isAdapterAvailable(): boolean {
+function isProviderAvailable(): boolean {
   if (!binaryExists) return false;
   const { stdout } = runCli([
     "--model",
@@ -41,7 +41,22 @@ function isAdapterAvailable(): boolean {
   }
 }
 
-const adapterAvailable = isAdapterAvailable();
+const providerAvailable = isProviderAvailable();
+
+beforeAll(() => {
+  if (!binaryExists) {
+    console.warn(
+      "  [cli.contract.test.ts] Binary not found at",
+      cliPath,
+      "- skipping CLI binary tests. Run `pnpm build` first.",
+    );
+  }
+  if (!providerAvailable) {
+    console.warn(
+      "  [cli.contract.test.ts] Provider not available - skipping calculation tests.",
+    );
+  }
+});
 
 describe("CLI parsing and validation", () => {
   it("rejects missing required args", () => {
@@ -127,8 +142,8 @@ describe.skipIf(!binaryExists)("CLI binary availability", () => {
   });
 });
 
-describe.skipIf(!binaryExists || !adapterAvailable)(
-  "CLI calculation (needs working adapter)",
+describe.skipIf(!binaryExists || !providerAvailable)(
+  "CLI calculation (needs working provider)",
   () => {
     it("produces valid JSON output with --json flag", () => {
       const { stdout, status } = runCli([

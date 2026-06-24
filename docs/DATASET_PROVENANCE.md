@@ -8,7 +8,9 @@ Sources are documented in `packages/vram-engine/data/provenance.json`.
 ## Review Cadence
 
 Records should be reviewed within 180 days of their last `reviewedAt` date.
-Stale records are rejected at build time by data validation.
+Stale records are rejected by the data validation script
+(`pnpm --filter @localairigs/model-context-fit-vram-engine validate:data`),
+which runs in CI and during release workflows.
 
 ## Update Procedure
 

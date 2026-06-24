@@ -4,16 +4,21 @@ import type {
   ResolvedMathConfiguration,
   ForwardEstimate,
 } from "@localairigs/model-context-fit-core";
+import {
+  ResolvedMathConfigurationSchema,
+  ForwardEstimateSchema,
+} from "@localairigs/model-context-fit-core";
 import { resolveModel } from "./catalog/models.js";
 import { resolveQuantization } from "./catalog/quantizations.js";
 import { estimateRequiredVram } from "./estimate.js";
 import { getAssumptionVersion } from "./catalog/assumptions.js";
 import { DATASET_VERSION, PACKAGE_NAME } from "./contracts.js";
+import { ENGINE_VERSION } from "./generated/version.js";
 import { VramEngineError } from "./errors.js";
 
 export class StandaloneVramProvider implements MathProvider {
   readonly packageName = PACKAGE_NAME;
-  readonly packageVersion = "0.1.0";
+  readonly packageVersion = ENGINE_VERSION;
   readonly assumptionVersion = getAssumptionVersion();
   readonly datasetVersion = DATASET_VERSION;
 
@@ -22,7 +27,7 @@ export class StandaloneVramProvider implements MathProvider {
       const model = resolveModel(input.model);
       const quantization = resolveQuantization(input.quantization);
 
-      return {
+      const config: ResolvedMathConfiguration = {
         model: model.id,
         quantization: quantization.id,
         runtimeProfile: input.runtimeProfile,
@@ -36,6 +41,15 @@ export class StandaloneVramProvider implements MathProvider {
           datasetVersion: this.datasetVersion,
         },
       };
+
+      const parsed = ResolvedMathConfigurationSchema.safeParse(config);
+      if (!parsed.success) {
+        throw new VramEngineError(
+          "MATH_PROVIDER_FAILURE",
+          `Configuration output validation failed: ${parsed.error.message}`,
+        );
+      }
+      return parsed.data;
     } catch (err) {
       if (err instanceof VramEngineError) {
         throw new VramEngineError(
@@ -78,7 +92,7 @@ export class StandaloneVramProvider implements MathProvider {
           | "q4_0",
       });
 
-      return {
+      const estimate: ForwardEstimate = {
         contextTokens: engineResult.contextTokens,
         requiredVramBytes: engineResult.requiredVramBytes,
         breakdownBytes: { ...engineResult.breakdownBytes },
@@ -86,6 +100,15 @@ export class StandaloneVramProvider implements MathProvider {
         warnings: [...engineResult.warnings],
         provider: { ...engineResult.metadata },
       };
+
+      const parsed = ForwardEstimateSchema.safeParse(estimate);
+      if (!parsed.success) {
+        throw new VramEngineError(
+          "MATH_PROVIDER_FAILURE",
+          `Estimate output validation failed: ${parsed.error.message}`,
+        );
+      }
+      return parsed.data;
     } catch (err) {
       if (err instanceof VramEngineError) {
         throw err;

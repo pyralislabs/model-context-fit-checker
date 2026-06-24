@@ -11,6 +11,8 @@ import {
 } from "./catalog/assumptions.js";
 import type { StandaloneForwardRequest, StandaloneForwardEstimate } from "./contracts.js";
 import { ASSUMPTION_VERSION, DATASET_VERSION, PACKAGE_NAME } from "./contracts.js";
+import { StandaloneForwardEstimateSchema } from "./contracts.js";
+import { ENGINE_VERSION } from "./generated/version.js";
 import { VramEngineError } from "./errors.js";
 
 export function estimateRequiredVram(
@@ -69,12 +71,12 @@ export function estimateRequiredVram(
 
   const metadata = {
     packageName: PACKAGE_NAME,
-    packageVersion: "0.1.0",
+    packageVersion: ENGINE_VERSION,
     assumptionVersion: ASSUMPTION_VERSION,
     datasetVersion: DATASET_VERSION,
   };
 
-  return {
+  const result: StandaloneForwardEstimate = {
     contextTokens: request.contextTokens,
     requiredVramBytes,
     breakdownBytes: {
@@ -88,4 +90,14 @@ export function estimateRequiredVram(
     warnings,
     metadata,
   };
+
+  const parsed = StandaloneForwardEstimateSchema.safeParse(result);
+  if (!parsed.success) {
+    throw new VramEngineError(
+      "ESTIMATE_OVERFLOW",
+      `Output validation failed: ${parsed.error.message}`,
+    );
+  }
+
+  return parsed.data;
 }

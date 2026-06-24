@@ -49,10 +49,10 @@ Exit codes: `0` success, `2` invalid input, `3` provider failure, `1` error.
 
 ## Project Status
 
-> **Current: Standalone VRAM engine migration in progress.**
+> **Current: Standalone VRAM engine migration complete.**
 
-The project now owns its forward VRAM engine (`packages/vram-engine`).
-No external VRAM calculator dependency is required.
+The project owns its forward VRAM engine (`packages/vram-engine`).
+No external VRAM calculator dependency is required or supported.
 
 ## Architecture
 
@@ -72,17 +72,18 @@ Library ----/
 
 Documentation is in `docs/` and the project root:
 
-| Document                       | Purpose                   |
-| ------------------------------ | ------------------------- |
-| `bootstrap.md`                 | Implementation contract   |
-| `docs/ARCHITECTURE.md`         | Component boundaries      |
-| `docs/VRAM_ENGINE_CONTRACT.md` | VRAM engine contract      |
-| `docs/CODE_STANDARDS.md`       | TypeScript/code standards |
-| `docs/ROADMAP.md`              | Milestones                |
-| `docs/TESTING.md`              | Testing strategy          |
-| `docs/VRAM_ASSUMPTIONS.md`     | VRAM assumptions          |
-| `docs/DATASET_PROVENANCE.md`   | Dataset provenance        |
-| `AGENTS.md`                    | Agent instructions        |
+| Document                       | Purpose                       |
+| ------------------------------ | ----------------------------- |
+| `bootstrap.md`                 | Implementation contract       |
+| `docs/ARCHITECTURE.md`         | Component boundaries          |
+| `docs/VRAM_ENGINE_CONTRACT.md` | VRAM engine contract          |
+| `docs/CODE_STANDARDS.md`       | TypeScript/code standards     |
+| `docs/ROADMAP.md`              | Milestones                    |
+| `docs/TESTING.md`              | Testing strategy              |
+| `docs/VRAM_ASSUMPTIONS.md`     | VRAM assumptions              |
+| `docs/DATASET_PROVENANCE.md`   | Dataset provenance            |
+| `AGENTS.md`                    | Agent instructions            |
+| `docs/adr/`                    | Architecture decision records |
 
 ## Backlinks And Attribution
 
@@ -95,5 +96,4 @@ These links are not injected into library results, CLI output, or JSON.
 
 ## License
 
-MIT — See [LICENSE](LICENSE). Third-party notices in
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT — See [LICENSE](LICENSE).

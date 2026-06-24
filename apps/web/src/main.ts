@@ -6,10 +6,63 @@ import type {
   NormalizedContextFitInputV1,
   ContextFitResultV1,
 } from "@localairigs/model-context-fit-core";
-import { StandaloneVramProvider } from "@localairigs/model-context-fit-vram-engine";
+import {
+  StandaloneVramProvider,
+  listModels,
+  listQuantizations,
+  listRuntimeProfiles,
+  listKvCacheDtypes,
+} from "@localairigs/model-context-fit-vram-engine";
 import { renderResult, renderError, renderLoading, clearResult } from "./render.js";
 
 const provider = new StandaloneVramProvider();
+
+function populateSelect(
+  selectId: string,
+  options: readonly { id: string; displayName?: string }[],
+): void {
+  const select = document.getElementById(selectId);
+  if (!select || !(select instanceof HTMLSelectElement)) return;
+
+  while (select.options.length > 0) {
+    select.remove(0);
+  }
+
+  const placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = `Select ${selectId}...`;
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  select.appendChild(placeholder);
+
+  for (const opt of options) {
+    const option = document.createElement("option");
+    option.value = opt.id;
+    option.textContent = opt.displayName ?? opt.id;
+    select.appendChild(option);
+  }
+}
+
+function populateSimpleSelect(
+  selectId: string,
+  options: readonly { id: string }[],
+): void {
+  populateSelect(selectId, options);
+}
+
+function populateForm(): void {
+  const models = listModels();
+  populateSelect("model", models);
+
+  const quantizations = listQuantizations();
+  populateSelect("quantization", quantizations);
+
+  const profiles = listRuntimeProfiles();
+  populateSimpleSelect("runtime-profile", profiles);
+
+  const kvDtypes = listKvCacheDtypes();
+  populateSimpleSelect("kv-cache-dtype", kvDtypes);
+}
 
 function getFormData(form: HTMLFormElement): Record<string, unknown> {
   const data: Record<string, unknown> = {
@@ -42,6 +95,8 @@ function getFormData(form: HTMLFormElement): Record<string, unknown> {
 }
 
 function initForm(): void {
+  populateForm();
+
   const form = document.getElementById("input-form");
   if (!form || !(form instanceof HTMLFormElement)) return;
 
@@ -62,6 +117,9 @@ function initForm(): void {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       renderError(errorDiv, msg);
+      if (errorDiv) {
+        errorDiv.focus();
+      }
       return;
     }
 
@@ -71,6 +129,9 @@ function initForm(): void {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       renderError(errorDiv, msg);
+      if (errorDiv) {
+        errorDiv.focus();
+      }
     }
   });
 }

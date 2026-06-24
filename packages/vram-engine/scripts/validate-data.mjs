@@ -1,6 +1,8 @@
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
@@ -19,21 +21,23 @@ function loadJSON(filePath) {
   }
 }
 
-function validateFile(dataFile, schemaFile, name) {
-  const data = loadJSON(dataFile);
-  if (!data) return false;
-
-  if (existsSync(schemaFile)) {
-    console.log(
-      `  ${name}: data loaded (${Array.isArray(data) ? data.length + " records" : "object"}), schema: ${schemaFile}`,
-    );
-  } else {
-    console.log(`  ${name}: data loaded, no schema file found at ${schemaFile}`);
+function compileSchema(ajv, schemaPath) {
+  try {
+    const schema = loadJSON(schemaPath);
+    if (!schema) return null;
+    const validate = ajv.compile(schema);
+    return validate;
+  } catch (err) {
+    console.error(`ERROR compiling schema ${schemaPath}: ${err.message}`);
+    process.exitCode = 1;
+    return null;
   }
-  return true;
 }
 
 console.log("Validating VRAM engine data files...\n");
+
+const ajv = new Ajv({ allErrors: true });
+addFormats(ajv);
 
 const validations = [
   { data: "models.json", schema: "model.schema.json", name: "Models" },
@@ -50,13 +54,40 @@ let allPassed = true;
 for (const v of validations) {
   const dataFile = resolve(dataDir, v.data);
   const schemaFile = resolve(schemasDir, v.schema);
+
   if (!existsSync(dataFile)) {
     console.error(`  ${v.name}: data file not found: ${dataFile}`);
     allPassed = false;
     continue;
   }
-  if (!validateFile(dataFile, schemaFile, v.name)) {
+  if (!existsSync(schemaFile)) {
+    console.error(`  ${v.name}: schema file not found: ${schemaFile}`);
     allPassed = false;
+    continue;
+  }
+
+  const data = loadJSON(dataFile);
+  if (!data) {
+    allPassed = false;
+    continue;
+  }
+
+  const validate = compileSchema(ajv, schemaFile);
+  if (!validate) {
+    allPassed = false;
+    continue;
+  }
+
+  const valid = validate(data);
+  if (!valid) {
+    console.error(`  ${v.name}: SCHEMA VALIDATION FAILED`);
+    for (const err of validate.errors) {
+      console.error(`    ${err.instancePath || "/"}: ${err.message}`);
+    }
+    allPassed = false;
+  } else {
+    const count = Array.isArray(data) ? data.length : "object";
+    console.log(`  ${v.name}: validated (${count} records)`);
   }
 }
 

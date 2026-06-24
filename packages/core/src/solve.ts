@@ -1,4 +1,4 @@
-import { ONE_GIB } from "./contracts.js";
+import { ONE_GIB, ContextFitResultV1Schema } from "./contracts.js";
 import type {
   NormalizedContextFitInputV1,
   ResolvedMathConfiguration,
@@ -18,6 +18,57 @@ import {
   invalidInput,
   internalError,
 } from "./errors.js";
+
+function validateResult<T>(result: T): T {
+  const parsed = ContextFitResultV1Schema.safeParse(result);
+  if (!parsed.success) {
+    throw internalError(`Output validation failed: ${parsed.error.message}`);
+  }
+  return parsed.data as T;
+}
+
+function mergeWarnings(...warningsArrays: string[][]): string[] {
+  return [...new Set(warningsArrays.flat())];
+}
+
+function guardConsistentProbes(
+  cached: ForwardEstimate,
+  uncached: ForwardEstimate,
+  contextTokens: number,
+): void {
+  if (uncached.requiredVramBytes !== cached.requiredVramBytes) {
+    throw providerInconsistent(
+      `Provider returned inconsistent results at ${contextTokens} tokens: ` +
+        `cached ${cached.requiredVramBytes} bytes, uncached ${uncached.requiredVramBytes} bytes`,
+    );
+  }
+  if (
+    uncached.provider.packageVersion !== cached.provider.packageVersion ||
+    uncached.provider.assumptionVersion !== cached.provider.assumptionVersion ||
+    uncached.provider.datasetVersion !== cached.provider.datasetVersion
+  ) {
+    throw providerInconsistent(
+      `Provider metadata inconsistent at ${contextTokens} tokens: ` +
+        `cached versions (${cached.provider.packageVersion}/${cached.provider.assumptionVersion}/${cached.provider.datasetVersion}), ` +
+        `uncached versions (${uncached.provider.packageVersion}/${uncached.provider.assumptionVersion}/${uncached.provider.datasetVersion})`,
+    );
+  }
+}
+
+function guardAllCachedMonotonic(cache: Map<number, ForwardEstimate>): void {
+  const sorted = [...cache.entries()].sort(([a], [b]) => a - b);
+  for (let i = 1; i < sorted.length; i++) {
+    const [, prevEst] = sorted[i - 1]!;
+    const [curCtx, curEst] = sorted[i]!;
+    if (curEst.requiredVramBytes < prevEst.requiredVramBytes) {
+      throw providerNonMonotone(
+        `Cached estimates are non-monotone: ` +
+          `${prevEst.contextTokens} tok -> ${prevEst.requiredVramBytes} bytes, ` +
+          `${curCtx} tok -> ${curEst.requiredVramBytes} bytes`,
+      );
+    }
+  }
+}
 
 export function alignUp(value: number, granularity: number): number {
   if (!Number.isSafeInteger(value) || !Number.isSafeInteger(granularity)) {
@@ -240,13 +291,18 @@ function computeCapKind(
   input: NormalizedContextFitInputV1,
   fitContext: number,
 ): "model_limit" | "caller_limit" | "model_and_caller_limit" {
-  const atModelMax = fitContext === searchRange.modelMaxContextTokens;
-  const atCallerMax =
-    input.maxContextTokens !== undefined && fitContext === input.maxContextTokens;
+  const atEffectiveMax = fitContext === searchRange.alignedMaxContextTokens;
+  if (!atEffectiveMax) return "model_limit";
 
-  if (atModelMax && atCallerMax) return "model_and_caller_limit";
-  if (atCallerMax) return "caller_limit";
-  if (atModelMax) return "model_limit";
+  const modelLimited =
+    searchRange.rawUpperBoundTokens === searchRange.modelMaxContextTokens;
+  const callerLimited =
+    input.maxContextTokens !== undefined &&
+    searchRange.rawUpperBoundTokens === input.maxContextTokens;
+
+  if (modelLimited && callerLimited) return "model_and_caller_limit";
+  if (callerLimited) return "caller_limit";
+  if (modelLimited) return "model_limit";
   return "model_limit";
 }
 
@@ -279,6 +335,14 @@ export async function solveContextFit(
       `Invalid model max context tokens: ${String(resolvedConfig.modelMaxContextTokens)}`,
     );
   }
+
+  const canonicalInput: NormalizedContextFitInputV1 = {
+    ...input,
+    model: resolvedConfig.model,
+    quantization: resolvedConfig.quantization,
+    runtimeProfile: resolvedConfig.runtimeProfile ?? input.runtimeProfile,
+    kvCacheDtype: resolvedConfig.kvCacheDtype ?? input.kvCacheDtype,
+  };
 
   const budget = computeBudget(input);
   const searchRange = computeSearchRange(input, resolvedConfig);
@@ -336,22 +400,29 @@ export async function solveContextFit(
 
   if (minEstimate.requiredVramBytes > usableVramBytes) {
     const finalEstimate = await getUncachedProbe(searchRange.alignedMinContextTokens);
+    guardConsistentProbes(
+      minEstimate,
+      finalEstimate,
+      searchRange.alignedMinContextTokens,
+    );
 
-    return {
+    guardAllCachedMonotonic(cache);
+
+    return validateResult({
       schemaVersion: "1",
       status: "minimum_context_does_not_fit",
-      input: { ...input },
+      input: { ...canonicalInput },
       budget,
       search: searchRange,
       provider: { ...resolvedConfig.provider },
-      warnings: [...minEstimate.warnings],
+      warnings: mergeWarnings(minEstimate.warnings, finalEstimate.warnings),
       result: { maxContextTokens: null, estimate: null },
       boundary: {
         kind: "minimum_context",
         contextTokens: searchRange.alignedMinContextTokens,
         estimate: toEstimateEvidence(finalEstimate, usableVramBytes),
       },
-    };
+    });
   }
 
   const maxEstimate = await getCachedProbe(searchRange.alignedMaxContextTokens);
@@ -363,15 +434,22 @@ export async function solveContextFit(
     const kind = computeCapKind(searchRange, input, fitContext);
 
     const finalEstimate = await getUncachedProbe(fitContext);
+    guardConsistentProbes(maxEstimate, finalEstimate, fitContext);
 
-    return {
+    guardAllCachedMonotonic(cache);
+
+    return validateResult({
       schemaVersion: "1",
       status: "fits",
-      input: { ...input },
+      input: { ...canonicalInput },
       budget,
       search: searchRange,
       provider: { ...resolvedConfig.provider },
-      warnings: [...maxEstimate.warnings],
+      warnings: mergeWarnings(
+        minEstimate.warnings,
+        maxEstimate.warnings,
+        finalEstimate.warnings,
+      ),
       result: {
         maxContextTokens: fitContext,
         estimate: toEstimateEvidence(finalEstimate, usableVramBytes),
@@ -381,7 +459,7 @@ export async function solveContextFit(
         nextContextTokens: null,
         nextEstimate: null,
       },
-    };
+    });
   }
 
   const stepCount =
@@ -389,15 +467,21 @@ export async function solveContextFit(
   if (stepCount === granularity) {
     const maxEst = await getUncachedProbe(searchRange.alignedMaxContextTokens);
     const minEst = await getUncachedProbe(searchRange.alignedMinContextTokens);
+    guardConsistentProbes(minEstimate, minEst, searchRange.alignedMinContextTokens);
+    guardConsistentProbes(maxEstimate, maxEst, searchRange.alignedMaxContextTokens);
 
-    return {
+    guardMonotonePair(minEst, searchRange.alignedMaxContextTokens, maxEst);
+
+    guardAllCachedMonotonic(cache);
+
+    return validateResult({
       schemaVersion: "1",
       status: "fits",
-      input: { ...input },
+      input: { ...canonicalInput },
       budget,
       search: searchRange,
       provider: { ...resolvedConfig.provider },
-      warnings: [...minEstimate.warnings],
+      warnings: mergeWarnings(minEstimate.warnings, minEst.warnings, maxEst.warnings),
       result: {
         maxContextTokens: searchRange.alignedMinContextTokens,
         estimate: toEstimateEvidence(minEst, usableVramBytes),
@@ -407,7 +491,7 @@ export async function solveContextFit(
         nextContextTokens: searchRange.alignedMaxContextTokens,
         nextEstimate: toEstimateEvidence(maxEst, usableVramBytes),
       },
-    };
+    });
   }
 
   let lowIdx = 0;
@@ -439,18 +523,25 @@ export async function solveContextFit(
   const nextContext = searchRange.alignedMinContextTokens + nextIdx * granularity;
 
   const finalFitEstimate = await getUncachedProbe(fitContext);
+  guardConsistentProbes(fitEstimate, finalFitEstimate, fitContext);
+
+  guardAllCachedMonotonic(cache);
 
   if (nextContext <= searchRange.alignedMaxContextTokens) {
     const finalNextEstimate = await getUncachedProbe(nextContext);
 
-    return {
+    return validateResult({
       schemaVersion: "1",
       status: "fits",
-      input: { ...input },
+      input: { ...canonicalInput },
       budget,
       search: searchRange,
       provider: { ...resolvedConfig.provider },
-      warnings: [...Array.from(new Set([...fitEstimate.warnings]))],
+      warnings: mergeWarnings(
+        fitEstimate.warnings,
+        finalFitEstimate.warnings,
+        finalNextEstimate.warnings,
+      ),
       result: {
         maxContextTokens: fitContext,
         estimate: toEstimateEvidence(finalFitEstimate, usableVramBytes),
@@ -460,18 +551,30 @@ export async function solveContextFit(
         nextContextTokens: nextContext,
         nextEstimate: toEstimateEvidence(finalNextEstimate, usableVramBytes),
       },
-    };
+    });
   }
 
   const kind = computeCapKind(searchRange, input, fitContext);
-  return {
+
+  const boundaryWarnings: string[] = [];
+
+  if (nextContext <= searchRange.alignedMaxContextTokens) {
+    const boundaryProbe = await getUncachedProbe(nextContext);
+    boundaryWarnings.push(...boundaryProbe.warnings);
+  }
+
+  return validateResult({
     schemaVersion: "1",
     status: "fits",
-    input: { ...input },
+    input: { ...canonicalInput },
     budget,
     search: searchRange,
     provider: { ...resolvedConfig.provider },
-    warnings: [...fitEstimate.warnings],
+    warnings: mergeWarnings(
+      fitEstimate.warnings,
+      finalFitEstimate.warnings,
+      boundaryWarnings,
+    ),
     result: {
       maxContextTokens: fitContext,
       estimate: toEstimateEvidence(finalFitEstimate, usableVramBytes),
@@ -481,5 +584,5 @@ export async function solveContextFit(
       nextContextTokens: null,
       nextEstimate: null,
     },
-  };
+  });
 }

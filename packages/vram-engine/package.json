@@ -26,10 +26,12 @@
     "validate:data": "node scripts/validate-data.mjs"
   },
   "dependencies": {
+    "@localairigs/model-context-fit-core": "workspace:*",
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@localairigs/model-context-fit-core": "workspace:*",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "typescript": "~5.8.0",
     "vitest": "^3.1.0"
   },

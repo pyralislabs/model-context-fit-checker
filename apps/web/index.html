@@ -20,18 +20,14 @@
           <legend>Configuration</legend>
 
           <label for="model">Model</label>
-          <input id="model" name="model" type="text" required autocomplete="off" />
-          <span class="hint">e.g. llama-3.1-8b, mistral-7b</span>
+          <select id="model" name="model" required>
+            <option value="" disabled selected>Select model...</option>
+          </select>
 
           <label for="quantization">Quantization</label>
-          <input
-            id="quantization"
-            name="quantization"
-            type="text"
-            required
-            autocomplete="off"
-          />
-          <span class="hint">e.g. q4_k_m, q8_0, fp16</span>
+          <select id="quantization" name="quantization" required>
+            <option value="" disabled selected>Select quantization...</option>
+          </select>
 
           <label for="gpu-vram-gib">GPU VRAM (GiB)</label>
           <input
@@ -78,17 +74,14 @@
           />
 
           <label for="runtime-profile">Runtime profile</label>
-          <input
-            id="runtime-profile"
-            name="runtimeProfile"
-            type="text"
-            autocomplete="off"
-          />
-          <span class="hint">e.g. balanced, lean, conservative</span>
+          <select id="runtime-profile" name="runtimeProfile">
+            <option value="" disabled selected>Select profile...</option>
+          </select>
 
           <label for="kv-cache-dtype">KV cache dtype</label>
-          <input id="kv-cache-dtype" name="kvCacheDtype" type="text" autocomplete="off" />
-          <span class="hint">e.g. fp16, q8_0</span>
+          <select id="kv-cache-dtype" name="kvCacheDtype">
+            <option value="" disabled selected>Select dtype...</option>
+          </select>
         </fieldset>
 
         <button type="submit">Calculate</button>

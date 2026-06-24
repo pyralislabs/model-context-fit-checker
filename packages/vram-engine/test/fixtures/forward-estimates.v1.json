@@ -13,13 +13,14 @@
           "contextTokens": 1
         },
         "expected": {
-          "breakdownKeys": [
-            "weights",
-            "kvCache",
-            "runtimeFixed",
-            "computeBuffer",
-            "safetyMargin"
-          ]
+          "requiredVramBytes": 5625743808,
+          "breakdownBytes": {
+            "weights": 4015000000,
+            "kvCache": 131072,
+            "runtimeFixed": 536870912,
+            "computeBuffer": 536870912,
+            "safetyMargin": 536870912
+          }
         }
       },
       {
@@ -32,17 +33,18 @@
           "contextTokens": 1
         },
         "expected": {
-          "breakdownKeys": [
-            "weights",
-            "kvCache",
-            "runtimeFixed",
-            "computeBuffer",
-            "safetyMargin"
-          ]
+          "requiredVramBytes": 41304635684,
+          "breakdownBytes": {
+            "weights": 35250000000,
+            "kvCache": 327680,
+            "runtimeFixed": 536870912,
+            "computeBuffer": 1762500000,
+            "safetyMargin": 3754937092
+          }
         }
       },
       {
-        "label": "mistral-7b q8_0 fp16 lean 4096 context",
+        "label": "mistral-7b-v0.3 q8_0 fp16 lean 4096 context",
         "request": {
           "model": "mistral-7b-v0.3",
           "quantization": "q8_0",
@@ -51,13 +53,14 @@
           "contextTokens": 4096
         },
         "expected": {
-          "breakdownKeys": [
-            "weights",
-            "kvCache",
-            "runtimeFixed",
-            "computeBuffer",
-            "safetyMargin"
-          ]
+          "requiredVramBytes": 8702585370,
+          "breakdownBytes": {
+            "weights": 7240000000,
+            "kvCache": 536870912,
+            "runtimeFixed": 268435456,
+            "computeBuffer": 268435456,
+            "safetyMargin": 388843546
+          }
         }
       }
     ]

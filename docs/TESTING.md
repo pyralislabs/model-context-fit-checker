@@ -102,7 +102,18 @@ assets load.
 
 ## Coverage Gates
 
-Initial v1 gates:
+Coverage thresholds are enforced at the root level in `vitest.config.ts` and
+at the per-package level in each project's `vitest.config.ts`:
+
+| Package                | Statements | Branches | Functions | Lines |
+| ---------------------- | ---------: | -------: | --------: | ----: |
+| Root (global)          |        60% |      50% |       40% |   60% |
+| `packages/core`        |        80% |      70% |       70% |   80% |
+| `packages/vram-engine` |        80% |      60% |       60% |   80% |
+| `apps/cli`             |        50% |      40% |       30% |   50% |
+| `apps/web`             |        60% |      40% |       40% |   60% |
+
+The project's aspirational targets for v1 completeness are:
 
 - `packages/core`: 100% branch coverage for solver and validation modules
 - `packages/vram-engine`: 90% line and branch coverage, plus mandatory

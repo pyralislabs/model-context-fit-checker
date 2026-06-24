@@ -48,57 +48,72 @@ export const ContextFitRequestV1Schema = z
 
 export type ContextFitRequestV1 = z.infer<typeof ContextFitRequestV1Schema>;
 
-export const NormalizedContextFitInputV1Schema = z.object({
-  schemaVersion,
-  model: z.string().min(1),
-  quantization: z.string().min(1),
-  gpuVramGiB: z.number().positive().finite(),
-  headroomPercent: HeadroomPercent,
-  minContextTokens: positiveSafeInt,
-  maxContextTokens: positiveSafeInt.optional(),
-  contextGranularity: positiveSafeInt,
-  runtimeProfile: z.string().optional(),
-  kvCacheDtype: z.string().optional(),
-});
+export const NormalizedContextFitInputV1Schema = z
+  .object({
+    schemaVersion,
+    model: z.string().min(1),
+    quantization: z.string().min(1),
+    gpuVramGiB: z.number().positive().finite(),
+    headroomPercent: HeadroomPercent,
+    minContextTokens: positiveSafeInt,
+    maxContextTokens: positiveSafeInt.optional(),
+    contextGranularity: positiveSafeInt,
+    runtimeProfile: z.string().optional(),
+    kvCacheDtype: z.string().optional(),
+  })
+  .strict();
 
 export type NormalizedContextFitInputV1 = z.infer<
   typeof NormalizedContextFitInputV1Schema
 >;
 
-export const MathProviderRequestSchema = z.object({
-  model: z.string().min(1),
-  quantization: z.string().min(1),
-  runtimeProfile: z.string().optional(),
-  kvCacheDtype: z.string().optional(),
-});
+export const MathProviderRequestSchema = z
+  .object({
+    model: z.string().min(1),
+    quantization: z.string().min(1),
+    runtimeProfile: z.string().optional(),
+    kvCacheDtype: z.string().optional(),
+  })
+  .strict();
 
 export type MathProviderRequest = z.infer<typeof MathProviderRequestSchema>;
 
-export const ResolvedMathConfigurationSchema = z.object({
-  model: z.string().min(1),
-  quantization: z.string().min(1),
-  runtimeProfile: z.string().optional(),
-  kvCacheDtype: z.string().optional(),
-  modelMaxContextTokens: positiveSafeInt,
-  units: z.literal("bytes"),
-  provider: z.object({
-    packageName: z.string(),
-    packageVersion: z.string(),
-    assumptionVersion: z.string(),
-    datasetVersion: z.string(),
-  }),
-});
+export const ResolvedMathConfigurationSchema = z
+  .object({
+    model: z.string().min(1),
+    quantization: z.string().min(1),
+    runtimeProfile: z.string().optional(),
+    kvCacheDtype: z.string().optional(),
+    modelMaxContextTokens: positiveSafeInt,
+    units: z.literal("bytes"),
+    provider: z.object({
+      packageName: z.string(),
+      packageVersion: z.string(),
+      assumptionVersion: z.string(),
+      datasetVersion: z.string(),
+    }),
+  })
+  .strict();
 
 export type ResolvedMathConfiguration = z.infer<typeof ResolvedMathConfigurationSchema>;
 
-export const ForwardEstimateSchema = z.object({
-  contextTokens: positiveSafeInt,
-  requiredVramBytes: nonNegativeSafeInt,
-  breakdownBytes: z.record(z.string(), nonNegativeSafeInt),
-  assumptions: z.array(z.string()),
-  warnings: z.array(z.string()),
-  provider: ResolvedMathConfigurationSchema.shape.provider,
-});
+export const ForwardEstimateSchema = z
+  .object({
+    contextTokens: positiveSafeInt,
+    requiredVramBytes: nonNegativeSafeInt,
+    breakdownBytes: z.record(z.string(), nonNegativeSafeInt),
+    assumptions: z.array(z.string()),
+    warnings: z.array(z.string()),
+    provider: z
+      .object({
+        packageName: z.string(),
+        packageVersion: z.string(),
+        assumptionVersion: z.string(),
+        datasetVersion: z.string(),
+      })
+      .strict(),
+  })
+  .strict();
 
 export type ForwardEstimate = z.infer<typeof ForwardEstimateSchema>;
 

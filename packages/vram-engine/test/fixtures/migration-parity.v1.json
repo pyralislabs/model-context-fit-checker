@@ -1,7 +1,98 @@
 {
   "version": "1.0.0",
   "description": "Migration parity fixtures - hand-calculated from documented formulas (Section 7 of migration plan)",
-  "methodology": "Values calculated using formulas in no-local-llm.md Section 7 with assumption values from Section 7.5",
-  "siblingEvidence": "Sibling checkout not available; values derived from documented formula contracts",
-  "fixtures": []
+  "methodology": "Values calculated using formulas in no-local-llm.md Section 7 with assumption values from Section 7.5. Each fixture was independently hand-calculated using the documented formula contract rather than copied from the sibling implementation.",
+  "siblingEvidence": "Sibling checkout not available at migration time. Formulas verified against documented contract in no-local-llm.md Section 7. Exact-byte fixture values verified in forward-estimates.v1.json with fixture.test.ts.",
+  "fixtures": [
+    {
+      "label": "llama-3.1-8b q4_k_m fp16 balanced 1 context",
+      "request": {
+        "model": "llama-3.1-8b",
+        "quantization": "q4_k_m",
+        "runtimeProfile": "balanced",
+        "kvCacheDtype": "fp16",
+        "contextTokens": 1
+      },
+      "expected": {
+        "weightBytes": 4015000000,
+        "kvCacheBytes": 131072,
+        "runtimeFixedBytes": 536870912,
+        "computeBufferBytes": 536870912,
+        "safetyMarginBytes": 536870912,
+        "requiredVramBytes": 5625743808
+      }
+    },
+    {
+      "label": "llama-3.1-70b q4_k_m fp16 balanced 1 context",
+      "request": {
+        "model": "llama-3.1-70b",
+        "quantization": "q4_k_m",
+        "runtimeProfile": "balanced",
+        "kvCacheDtype": "fp16",
+        "contextTokens": 1
+      },
+      "expected": {
+        "weightBytes": 35250000000,
+        "kvCacheBytes": 327680,
+        "runtimeFixedBytes": 536870912,
+        "computeBufferBytes": 1762500000,
+        "safetyMarginBytes": 3754937092,
+        "requiredVramBytes": 41304635684
+      }
+    },
+    {
+      "label": "mistral-7b-v0.3 q8_0 fp16 lean 4096 context",
+      "request": {
+        "model": "mistral-7b-v0.3",
+        "quantization": "q8_0",
+        "runtimeProfile": "lean",
+        "kvCacheDtype": "fp16",
+        "contextTokens": 4096
+      },
+      "expected": {
+        "weightBytes": 7240000000,
+        "kvCacheBytes": 536870912,
+        "runtimeFixedBytes": 268435456,
+        "computeBufferBytes": 268435456,
+        "safetyMarginBytes": 388843546,
+        "requiredVramBytes": 8702585370
+      }
+    },
+    {
+      "label": "llama-3.1-8b q4_k_m balanced fp16 8192 context (KV-cache scaling test)",
+      "request": {
+        "model": "llama-3.1-8b",
+        "quantization": "q4_k_m",
+        "runtimeProfile": "balanced",
+        "kvCacheDtype": "fp16",
+        "contextTokens": 8192
+      },
+      "expected": {
+        "weightBytes": 4015000000,
+        "kvCacheBytes": 1073741824,
+        "runtimeFixedBytes": 536870912,
+        "computeBufferBytes": 536870912,
+        "safetyMarginBytes": 536870912,
+        "requiredVramBytes": 6699354560
+      }
+    },
+    {
+      "label": "llama-3.1-8b fp32 balanced fp16 1 context (full precision)",
+      "request": {
+        "model": "llama-3.1-8b",
+        "quantization": "fp32",
+        "runtimeProfile": "balanced",
+        "kvCacheDtype": "fp16",
+        "contextTokens": 1
+      },
+      "expected": {
+        "weightBytes": 32120000000,
+        "kvCacheBytes": 131072,
+        "runtimeFixedBytes": 536870912,
+        "computeBufferBytes": 1606000000,
+        "safetyMarginBytes": 3426287092,
+        "requiredVramBytes": 37689289076
+      }
+    }
+  ]
 }

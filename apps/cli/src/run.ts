@@ -1,4 +1,4 @@
-import { readFile, readFileSync } from "node:fs";
+import { readFile, readFileSync, statSync } from "node:fs";
 import { stdin } from "node:process";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -92,7 +92,7 @@ function printVersion(): void {
   process.stdout.write(getCliVersion() + "\n");
 }
 
-function parseArgs(argv: string[]): CliOptions & { unknownFlags: string[] } {
+export function parseArgs(argv: string[]): CliOptions & { unknownFlags: string[] } {
   const opts: CliOptions & { unknownFlags: string[] } = {
     json: false,
     pretty: false,
@@ -110,33 +110,73 @@ function parseArgs(argv: string[]): CliOptions & { unknownFlags: string[] } {
     }
     switch (arg) {
       case "--model":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.model = argv[++i]!;
         break;
       case "--quant":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.quant = argv[++i]!;
         break;
       case "--vram-gib":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.vramGib = Number(argv[++i]!);
         break;
       case "--headroom-percent":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.headroomPercent = Number(argv[++i]!);
         break;
       case "--min-context":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.minContext = Number(argv[++i]!);
         break;
       case "--max-context":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.maxContext = Number(argv[++i]!);
         break;
       case "--granularity":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.granularity = Number(argv[++i]!);
         break;
       case "--runtime-profile":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.runtimeProfile = argv[++i]!;
         break;
       case "--kv-cache-dtype":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.kvCacheDtype = argv[++i]!;
         break;
       case "--input":
+        if (i + 1 >= argv.length || argv[i + 1]!.startsWith("--")) {
+          opts.unknownFlags.push(`${arg} (missing value)`);
+          break;
+        }
         opts.input = argv[++i]!;
         break;
       case "--stdin":
@@ -172,7 +212,7 @@ function parseArgs(argv: string[]): CliOptions & { unknownFlags: string[] } {
   return opts;
 }
 
-function checkMutualExclusion(opts: CliOptions): string | null {
+export function checkMutualExclusion(opts: CliOptions): string | null {
   const directMode =
     opts.model !== undefined || opts.quant !== undefined || opts.vramGib !== undefined;
   const modeCount =
@@ -202,6 +242,16 @@ function checkMutualExclusion(opts: CliOptions): string | null {
 
 function readInputFile(filePath: string): Promise<string> {
   return new Promise<string>((resolve, reject) => {
+    try {
+      const stats = statSync(filePath);
+      if (stats.size > INPUT_SIZE_LIMIT) {
+        reject(new Error(`Input file exceeds ${INPUT_SIZE_LIMIT} byte limit`));
+        return;
+      }
+    } catch {
+      // stat failed, will be caught by readFile
+    }
+
     readFile(filePath, "utf-8", (err, data) => {
       if (err) {
         reject(new Error(`Cannot read input file: ${err.message}`));
@@ -214,9 +264,10 @@ function readInputFile(filePath: string): Promise<string> {
 
 function readStdin(): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    let data = "";
+    const chunks: Buffer[] = [];
     let totalBytes = 0;
     let aborted = false;
+    const decoder = new TextDecoder("utf-8", { fatal: true });
 
     stdin.on("data", (chunk: Buffer) => {
       if (aborted) return;
@@ -227,11 +278,19 @@ function readStdin(): Promise<string> {
         reject(new Error(`Input exceeds ${INPUT_SIZE_LIMIT} byte limit`));
         return;
       }
-      data += chunk.toString("utf-8");
+      chunks.push(chunk);
     });
 
     stdin.on("end", () => {
-      if (!aborted) resolve(data);
+      if (aborted) return;
+      try {
+        const combined = Buffer.concat(chunks);
+        decoder.decode(combined);
+        const text = combined.toString("utf-8");
+        resolve(text);
+      } catch {
+        reject(new Error("Input contains invalid UTF-8 sequences"));
+      }
     });
 
     stdin.on("error", (err) => {
@@ -268,7 +327,7 @@ async function resolveInput(opts: CliOptions): Promise<unknown> {
   return input;
 }
 
-function getErrorExitCode(code: string): number {
+export function getErrorExitCode(code: string): number {
   switch (code) {
     case "INVALID_INPUT":
     case "UNSUPPORTED_SCHEMA_VERSION":

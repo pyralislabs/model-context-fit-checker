@@ -95,7 +95,7 @@ Allowed:
 ```text
 apps/* -> packages/core
 apps/* -> packages/vram-engine
-packages/vram-engine -> packages/core (types only)
+packages/vram-engine -> packages/core (runtime dependency via Schema imports)
 ```
 
 Forbidden:

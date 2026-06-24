@@ -15,10 +15,11 @@
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.integration.workspace.ts",
     "build": "pnpm -r build",
-    "pack:check": "pnpm -r prepack",
+    "pack:check": "node scripts/pack-smoke.mjs",
     "verify:standalone": "node scripts/verify-no-external-calculator.mjs"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.28.0",
     "@eslint/js": "^9.0.0",
     "eslint": "^9.0.0",
     "prettier": "^3.5.0",
