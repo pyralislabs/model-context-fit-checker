@@ -1,0 +1,29 @@
+[
+  {
+    "version": "1.0.0",
+    "description": "Forward estimate fixtures for verification",
+    "fixtures": [
+      {
+        "label": "llama-3.1-8b q4_k_m fp16 balanced 1 context",
+        "request": { "model": "llama-3.1-8b", "quantization": "q4_k_m", "runtimeProfile": "balanced", "kvCacheDtype": "fp16", "contextTokens": 1 },
+        "expected": {
+          "breakdownKeys": ["weights", "kvCache", "runtimeFixed", "computeBuffer", "safetyMargin"]
+        }
+      },
+      {
+        "label": "llama-3.1-70b q4_k_m fp16 balanced 1 context",
+        "request": { "model": "llama-3.1-70b", "quantization": "q4_k_m", "runtimeProfile": "balanced", "kvCacheDtype": "fp16", "contextTokens": 1 },
+        "expected": {
+          "breakdownKeys": ["weights", "kvCache", "runtimeFixed", "computeBuffer", "safetyMargin"]
+        }
+      },
+      {
+        "label": "mistral-7b q8_0 fp16 lean 4096 context",
+        "request": { "model": "mistral-7b-v0.3", "quantization": "q8_0", "runtimeProfile": "lean", "kvCacheDtype": "fp16", "contextTokens": 4096 },
+        "expected": {
+          "breakdownKeys": ["weights", "kvCache", "runtimeFixed", "computeBuffer", "safetyMargin"]
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ProvenanceCatalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "sources"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id", "publisher", "title", "url", "accessedAt",
+          "license", "usageNote", "appliesTo"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "publisher": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+          "accessedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+          "license": { "type": "string", "minLength": 1 },
+          "usageNote": { "type": "string", "minLength": 1 },
+          "appliesTo": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["models", "quantizations", "assumptions"] },
+            "minItems": 1
+          }
+        }
+      }
+    }
+  }
+}

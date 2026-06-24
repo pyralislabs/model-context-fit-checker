@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AssumptionsCatalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version", "formulaIds", "parallelSequences",
+    "runtimeProfiles", "kvCacheDtypes", "assumptionLines"
+  ],
+  "properties": {
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "formulaIds": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "parallelSequences": { "type": "integer", "minimum": 1 },
+    "runtimeProfiles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fixedGiB", "minimumComputeGiB", "weightBufferFraction",
+          "minimumSafetyGiB", "safetyFraction"
+        ],
+        "properties": {
+          "fixedGiB": { "type": "number", "minimum": 0 },
+          "minimumComputeGiB": { "type": "number", "minimum": 0 },
+          "weightBufferFraction": { "type": "number", "minimum": 0 },
+          "minimumSafetyGiB": { "type": "number", "minimum": 0 },
+          "safetyFraction": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "kvCacheDtypes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["bytesPerElement", "warnIdealized"],
+        "properties": {
+          "bytesPerElement": { "type": "number", "minimum": 0 },
+          "warnIdealized": { "type": "boolean" }
+        }
+      }
+    },
+    "assumptionLines": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

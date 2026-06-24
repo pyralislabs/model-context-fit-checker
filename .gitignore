@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs and compiler state
+dist/
+*.tsbuildinfo
+
+# Test and coverage output
+coverage/
+.vitest/
+test-results/
+playwright-report/
+
+# Tool caches
+.vite/
+.cache/
+.eslintcache
+.wrangler/
+
+# Local environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Logs and package archives
+*.log
+*-debug.log*
+*.tgz
+
+# Editor and operating-system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

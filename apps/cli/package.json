@@ -1,0 +1,40 @@
+{
+  "name": "model-context-fit-checker",
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "model-context-fit": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/run.d.ts",
+      "import": "./dist/run.js",
+      "default": "./dist/run.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "prepack": "tsc -b",
+    "start": "node dist/bin.js"
+  },
+  "dependencies": {
+    "@localairigs/model-context-fit-core": "workspace:*",
+    "@localairigs/model-context-fit-canonical-adapter": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "~5.8.0",
+    "vitest": "^3.1.0"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}

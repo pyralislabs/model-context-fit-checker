@@ -1,0 +1,7 @@
+{
+  "version": "1.0.0",
+  "description": "Migration parity fixtures - hand-calculated from documented formulas (Section 7 of migration plan)",
+  "methodology": "Values calculated using formulas in no-local-llm.md Section 7 with assumption values from Section 7.5",
+  "siblingEvidence": "Sibling checkout not available; values derived from documented formula contracts",
+  "fixtures": []
+}

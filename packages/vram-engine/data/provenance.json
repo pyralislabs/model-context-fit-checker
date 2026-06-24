@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "sources": [
+    {
+      "id": "meta-llama-3.1",
+      "publisher": "Meta",
+      "title": "Llama 3.1 Model Card",
+      "url": "https://ai.meta.com/research/publications/the-llama-3-1-herd-of-models/",
+      "accessedAt": "2026-06-01",
+      "license": "Meta Llama 3.1 Community License",
+      "usageNote": "Architecture fields (layers, heads, dim) and max context from model card",
+      "appliesTo": ["models"]
+    },
+    {
+      "id": "mistral-ai",
+      "publisher": "Mistral AI",
+      "title": "Mistral and Mixtral Model Documentation",
+      "url": "https://docs.mistral.ai/",
+      "accessedAt": "2026-06-01",
+      "license": "Apache 2.0 / Mistral Research License",
+      "usageNote": "Architecture fields and max context from documentation",
+      "appliesTo": ["models"]
+    },
+    {
+      "id": "ggml-format",
+      "publisher": "ggerganov",
+      "title": "GGML Format Specification",
+      "url": "https://github.com/ggerganov/ggml",
+      "accessedAt": "2026-06-01",
+      "license": "MIT",
+      "usageNote": "Quantization bit widths and type identifiers from GGML/llama.cpp",
+      "appliesTo": ["quantizations"]
+    },
+    {
+      "id": "common-knowledge",
+      "publisher": "Multiple Sources",
+      "title": "Common Precision Format Knowledge",
+      "url": "https://en.wikipedia.org/wiki/Half-precision_floating-point_format",
+      "accessedAt": "2026-06-01",
+      "license": "CC BY-SA",
+      "usageNote": "Standard FP16/FP32 bit widths; no proprietary information",
+      "appliesTo": ["quantizations"]
+    }
+  ]
+}

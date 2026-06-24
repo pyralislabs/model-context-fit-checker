@@ -1,0 +1,37 @@
+{
+  "name": "@localairigs/model-context-fit-canonical-adapter",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "prepack": "tsc -b"
+  },
+  "dependencies": {
+    "@localairigs/model-context-fit-core": "workspace:*",
+    "local-llm-vram-calculator": "file:../../../local-llm-vram-calculator"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.0",
+    "vitest": "^3.1.0"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
