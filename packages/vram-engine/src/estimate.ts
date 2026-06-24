@@ -3,12 +3,19 @@ import { computeKvCacheBytes } from "./math/kv-cache.js";
 import { computeOverhead } from "./math/overhead.js";
 import { resolveModel } from "./catalog/models.js";
 import { resolveQuantization } from "./catalog/quantizations.js";
-import { resolveRuntimeProfile, resolveKvCacheDtype, getParallelSequences, getAssumptionVersion, getAssumptionLines } from "./catalog/assumptions.js";
+import {
+  resolveRuntimeProfile,
+  resolveKvCacheDtype,
+  getParallelSequences,
+  getAssumptionLines,
+} from "./catalog/assumptions.js";
 import type { StandaloneForwardRequest, StandaloneForwardEstimate } from "./contracts.js";
 import { ASSUMPTION_VERSION, DATASET_VERSION, PACKAGE_NAME } from "./contracts.js";
 import { VramEngineError } from "./errors.js";
 
-export function estimateRequiredVram(request: StandaloneForwardRequest): StandaloneForwardEstimate {
+export function estimateRequiredVram(
+  request: StandaloneForwardRequest,
+): StandaloneForwardEstimate {
   const model = resolveModel(request.model);
   const quantization = resolveQuantization(request.quantization);
   const runtimeProfile = resolveRuntimeProfile(request.runtimeProfile ?? "balanced");
@@ -38,7 +45,11 @@ export function estimateRequiredVram(request: StandaloneForwardRequest): Standal
   });
 
   const requiredVramBytes =
-    weightBytes + kvCacheBytes + overhead.runtimeFixedBytes + overhead.computeBufferBytes + overhead.safetyMarginBytes;
+    weightBytes +
+    kvCacheBytes +
+    overhead.runtimeFixedBytes +
+    overhead.computeBufferBytes +
+    overhead.safetyMarginBytes;
 
   if (!Number.isSafeInteger(requiredVramBytes)) {
     throw new VramEngineError(

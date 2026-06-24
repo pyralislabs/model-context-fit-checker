@@ -1,5 +1,7 @@
-import { readFile } from "node:fs";
+import { readFile, readFileSync } from "node:fs";
 import { stdin } from "node:process";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   validateAndNormalizeRequest,
   parseJsonInput,
@@ -9,9 +11,25 @@ import type {
   NormalizedContextFitInputV1,
   ErrorResultV1,
 } from "@localairigs/model-context-fit-core";
-import { LocalLlmVramProvider } from "@localairigs/model-context-fit-canonical-adapter";
+import { StandaloneVramProvider } from "@localairigs/model-context-fit-vram-engine";
 import { formatHuman } from "./format-human.js";
 import { formatJson } from "./format-json.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+let _cliVersion: string | undefined;
+function getCliVersion(): string {
+  if (_cliVersion === undefined) {
+    try {
+      const pkgPath = resolve(__dirname, "../package.json");
+      const pkg = JSON.parse(readFileSync(pkgPath, "utf-8")) as { version?: string };
+      _cliVersion = pkg.version ?? "0.0.1";
+    } catch {
+      _cliVersion = "0.0.1";
+    }
+  }
+  return _cliVersion;
+}
 
 const INPUT_SIZE_LIMIT = 1 * 1024 * 1024;
 
@@ -71,20 +89,25 @@ EXIT CODES:
 }
 
 function printVersion(): void {
-  process.stdout.write("0.0.1\n");
+  process.stdout.write(getCliVersion() + "\n");
 }
 
-function parseArgs(argv: string[]): CliOptions {
-  const opts: CliOptions = {
+function parseArgs(argv: string[]): CliOptions & { unknownFlags: string[] } {
+  const opts: CliOptions & { unknownFlags: string[] } = {
     json: false,
     pretty: false,
     help: false,
     version: false,
     noColor: false,
+    unknownFlags: [],
   };
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!;
+    if (!arg.startsWith("--")) {
+      opts.unknownFlags.push(arg);
+      continue;
+    }
     switch (arg) {
       case "--model":
         opts.model = argv[++i]!;
@@ -131,20 +154,18 @@ function parseArgs(argv: string[]): CliOptions {
       case "--version":
         opts.version = true;
         break;
-      case "--no-color":
-      case "--no-color=true":
-        opts.noColor = true;
-        break;
       default:
         if (arg.startsWith("--no-color")) {
           opts.noColor = true;
+        } else {
+          opts.unknownFlags.push(arg);
         }
         break;
     }
   }
 
   const noColorEnv = process.env.NO_COLOR;
-  if (noColorEnv !== undefined && noColorEnv !== "") {
+  if (noColorEnv !== undefined) {
     opts.noColor = true;
   }
 
@@ -269,6 +290,11 @@ function getErrorExitCode(code: string): number {
 export async function run(argv: string[]): Promise<number> {
   const opts = parseArgs(argv);
 
+  if (opts.unknownFlags.length > 0) {
+    process.stderr.write(`Error: Unknown flags: ${opts.unknownFlags.join(", ")}\n`);
+    return 2;
+  }
+
   if (opts.help) {
     printHelp();
     return 0;
@@ -345,7 +371,7 @@ export async function run(argv: string[]): Promise<number> {
   }
 
   try {
-    const provider = new LocalLlmVramProvider();
+    const provider = new StandaloneVramProvider();
     const result = await solveContextFit(provider, normalized);
 
     if (opts.json) {

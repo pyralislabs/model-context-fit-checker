@@ -1,8 +1,8 @@
-import quantizationData from "../../data/quantizations.json" with { type: "json" };
+import quantizationsRaw from "../generated/quantizations.js";
 import type { QuantizationRecord, PublicQuantizationSummary } from "../contracts.js";
 import { unknownQuantization } from "../errors.js";
 
-const quantizations = quantizationData as unknown as QuantizationRecord[];
+const quantizations = quantizationsRaw as QuantizationRecord[];
 
 const index = new Map<string, QuantizationRecord>();
 

@@ -75,15 +75,16 @@ publishers, review dates, and usage notes. Review cadence is documented in
 
 ## Versions
 
-| Field              | Source                            |
-| ------------------ | --------------------------------- |
-| `packageVersion`   | Generated from `package.json`     |
+| Field               | Source                           |
+| ------------------- | -------------------------------- |
+| `packageVersion`    | Generated from `package.json`    |
 | `assumptionVersion` | `assumptions.json` top-level key |
-| `datasetVersion`   | `provenance.json` top-level key   |
+| `datasetVersion`    | `provenance.json` top-level key  |
 
 ## Browser Compatibility
 
 The engine is browser-compatible by construction:
+
 - No `node:fs`, `node:path`, `process`, or network access
 - No runtime JSON file reads
 - No conditional hidden Node entry point

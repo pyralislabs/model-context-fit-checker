@@ -41,11 +41,13 @@ workspace package.
 ## Consequences
 
 Positive:
+
 - The project can build, test, and release independently.
 - Formula and dataset changes are reviewable, versioned, and protected by tests.
 - All release gates can run from a clean checkout.
 
 Negative:
+
 - The project must now maintain model/quantization data that was previously
   owned by an external package.
 - Catalog freshness requires active review and updates.

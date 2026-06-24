@@ -15,7 +15,8 @@
     "test:coverage": "vitest run --coverage",
     "test:integration": "vitest run --config vitest.integration.workspace.ts",
     "build": "pnpm -r build",
-    "pack:check": "pnpm -r prepack"
+    "pack:check": "pnpm -r prepack",
+    "verify:standalone": "node scripts/verify-no-external-calculator.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

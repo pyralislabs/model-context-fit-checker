@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@localairigs/model-context-fit-core": "workspace:*",
-    "@localairigs/model-context-fit-canonical-adapter": "workspace:*"
+    "@localairigs/model-context-fit-vram-engine": "workspace:*"
   },
   "devDependencies": {
     "typescript": "~5.8.0",

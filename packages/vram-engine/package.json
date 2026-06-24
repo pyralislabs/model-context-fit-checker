@@ -19,9 +19,10 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build": "pnpm generate:version && tsc -b",
+    "build": "pnpm generate:version && pnpm generate:data && tsc -b",
     "prepack": "pnpm build",
     "generate:version": "node scripts/generate-version.mjs",
+    "generate:data": "node scripts/generate-data.mjs",
     "validate:data": "node scripts/validate-data.mjs"
   },
   "dependencies": {

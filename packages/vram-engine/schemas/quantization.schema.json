@@ -4,8 +4,13 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "id", "displayName", "effectiveBitsPerWeight", "status",
-    "notes", "sourceIds", "reviewedAt"
+    "id",
+    "displayName",
+    "effectiveBitsPerWeight",
+    "status",
+    "notes",
+    "sourceIds",
+    "reviewedAt"
   ],
   "properties": {
     "id": { "type": "string", "minLength": 1 },

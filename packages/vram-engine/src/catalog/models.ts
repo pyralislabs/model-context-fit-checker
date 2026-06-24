@@ -1,8 +1,8 @@
-import modelData from "../../data/models.json" with { type: "json" };
+import modelsRaw from "../generated/models.js";
 import type { ModelRecord, PublicModelSummary } from "../contracts.js";
 import { unknownModel } from "../errors.js";
 
-const models = modelData as unknown as ModelRecord[];
+const models = modelsRaw as ModelRecord[];
 
 const idIndex = new Map<string, ModelRecord>();
 const aliasIndex = new Map<string, ModelRecord>();

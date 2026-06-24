@@ -1,4 +1,1 @@
-export {
-  resolveRuntimeProfile,
-  listRuntimeProfiles,
-} from "./assumptions.js";
+export { resolveRuntimeProfile, listRuntimeProfiles } from "./assumptions.js";

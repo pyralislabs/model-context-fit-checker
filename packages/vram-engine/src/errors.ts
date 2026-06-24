@@ -17,11 +17,17 @@ export function unknownQuantization(quant: string): VramEngineError {
 }
 
 export function unknownRuntimeProfile(profile: string): VramEngineError {
-  return new VramEngineError("UNKNOWN_RUNTIME_PROFILE", `Unknown runtime profile: ${profile}`);
+  return new VramEngineError(
+    "UNKNOWN_RUNTIME_PROFILE",
+    `Unknown runtime profile: ${profile}`,
+  );
 }
 
 export function unknownKvCacheDtype(dtype: string): VramEngineError {
-  return new VramEngineError("UNKNOWN_KV_CACHE_DTYPE", `Unknown KV cache dtype: ${dtype}`);
+  return new VramEngineError(
+    "UNKNOWN_KV_CACHE_DTYPE",
+    `Unknown KV cache dtype: ${dtype}`,
+  );
 }
 
 export function invalidNumericInput(message: string): VramEngineError {

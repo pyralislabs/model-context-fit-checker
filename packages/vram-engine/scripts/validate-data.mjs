@@ -24,7 +24,9 @@ function validateFile(dataFile, schemaFile, name) {
   if (!data) return false;
 
   if (existsSync(schemaFile)) {
-    console.log(`  ${name}: data loaded (${Array.isArray(data) ? data.length + " records" : "object"}), schema: ${schemaFile}`);
+    console.log(
+      `  ${name}: data loaded (${Array.isArray(data) ? data.length + " records" : "object"}), schema: ${schemaFile}`,
+    );
   } else {
     console.log(`  ${name}: data loaded, no schema file found at ${schemaFile}`);
   }
@@ -35,7 +37,11 @@ console.log("Validating VRAM engine data files...\n");
 
 const validations = [
   { data: "models.json", schema: "model.schema.json", name: "Models" },
-  { data: "quantizations.json", schema: "quantization.schema.json", name: "Quantizations" },
+  {
+    data: "quantizations.json",
+    schema: "quantization.schema.json",
+    name: "Quantizations",
+  },
   { data: "assumptions.json", schema: "assumptions.schema.json", name: "Assumptions" },
   { data: "provenance.json", schema: "provenance.schema.json", name: "Provenance" },
 ];

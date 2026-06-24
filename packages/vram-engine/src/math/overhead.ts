@@ -35,7 +35,8 @@ export function computeOverhead(input: OverheadInput): OverheadOutput {
     throw new RangeError("computeBufferBytes not safe integer");
   }
 
-  const subtotalWithoutSafety = input.weightBytes + runtimeFixedBytes + computeBufferBytes;
+  const subtotalWithoutSafety =
+    input.weightBytes + runtimeFixedBytes + computeBufferBytes;
   if (!Number.isSafeInteger(subtotalWithoutSafety)) {
     throw new RangeError("subtotalWithoutSafety not safe integer");
   }

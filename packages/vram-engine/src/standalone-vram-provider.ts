@@ -39,11 +39,15 @@ export class StandaloneVramProvider implements MathProvider {
     } catch (err) {
       if (err instanceof VramEngineError) {
         throw new VramEngineError(
-          err.code === "UNKNOWN_MODEL" ? "UNSUPPORTED_MODEL" :
-          err.code === "UNKNOWN_QUANTIZATION" ? "UNSUPPORTED_QUANTIZATION" :
-          err.code === "UNKNOWN_RUNTIME_PROFILE" ? "UNSUPPORTED_RUNTIME_PROFILE" :
-          err.code === "UNKNOWN_KV_CACHE_DTYPE" ? "UNSUPPORTED_KV_CACHE_DTYPE" :
-          "MATH_PROVIDER_FAILURE",
+          err.code === "UNKNOWN_MODEL"
+            ? "UNSUPPORTED_MODEL"
+            : err.code === "UNKNOWN_QUANTIZATION"
+              ? "UNSUPPORTED_QUANTIZATION"
+              : err.code === "UNKNOWN_RUNTIME_PROFILE"
+                ? "UNSUPPORTED_RUNTIME_PROFILE"
+                : err.code === "UNKNOWN_KV_CACHE_DTYPE"
+                  ? "UNSUPPORTED_KV_CACHE_DTYPE"
+                  : "MATH_PROVIDER_FAILURE",
           err.message,
         );
       }
@@ -62,8 +66,16 @@ export class StandaloneVramProvider implements MathProvider {
         model: input.model,
         quantization: input.quantization,
         contextTokens: input.contextTokens,
-        runtimeProfile: (input.runtimeProfile ?? "balanced") as "lean" | "balanced" | "conservative",
-        kvCacheDtype: (input.kvCacheDtype ?? "fp16") as "fp16" | "bf16" | "fp32" | "q8_0" | "q4_0",
+        runtimeProfile: (input.runtimeProfile ?? "balanced") as
+          | "lean"
+          | "balanced"
+          | "conservative",
+        kvCacheDtype: (input.kvCacheDtype ?? "fp16") as
+          | "fp16"
+          | "bf16"
+          | "fp32"
+          | "q8_0"
+          | "q4_0",
       });
 
       return {

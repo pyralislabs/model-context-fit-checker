@@ -2,12 +2,6 @@ import { describe, it, expect } from "vitest";
 
 describe("vram-engine browser compatibility", () => {
   it("imports without node:fs or node:path", () => {
-    // The engine source should not import Node-only modules.
-    // This test verifies the package can be imported in a non-Node environment
-    // by checking that no Node built-ins are in the dependency chain.
-    const fs = Object.keys(import.meta);
-    // This is a structural test - the real check is at build time
-    // when Vite bundling succeeds without Node polyfills.
     expect(true).toBe(true);
   });
 

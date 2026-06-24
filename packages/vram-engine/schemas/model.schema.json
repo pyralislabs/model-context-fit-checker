@@ -4,9 +4,17 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "id", "aliases", "displayName", "family", "parameterCount",
-    "layers", "kvHeads", "headDim", "declaredMaxContextTokens",
-    "sourceIds", "reviewedAt"
+    "id",
+    "aliases",
+    "displayName",
+    "family",
+    "parameterCount",
+    "layers",
+    "kvHeads",
+    "headDim",
+    "declaredMaxContextTokens",
+    "sourceIds",
+    "reviewedAt"
   ],
   "properties": {
     "id": { "type": "string", "minLength": 1 },

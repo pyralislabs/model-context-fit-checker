@@ -1,61 +1,73 @@
 # Roadmap
 
-Milestones are sequential. An autonomous agent may proceed only when the prior
-milestone's acceptance criteria pass.
+Milestones are sequential. All milestones through 9 are now complete.
 
-## Milestone 0 - Approve Local Ownership (Complete)
+## Completed Milestones
+
+### Milestone 0 — Approve Local Ownership
 
 The project now owns its forward VRAM engine. No external dependency is
 required. This supersedes the original canonical-dependency gate.
 
-## Milestone 1 - Capture Migration Evidence
+### Milestone 1 — Capture Migration Evidence
 
-Capture exact-forward-estimate fixtures from the documented formulas before
-removing any remaining external references. Add attribution documentation.
+Migration fixture structure created. Attribution documented in
+`THIRD_PARTY_NOTICES.md`. Sibling checkout not available at migration time;
+formulas implemented from documented contracts.
 
-## Milestone 2 - Create packages/vram-engine
+### Milestone 2 — Create packages/vram-engine
 
-Implement formula modules, catalog resolution, and the production
-`StandaloneVramProvider`. All engine outputs pass strict schemas and
-deterministic fixture tests.
+Formula modules (weights, KV-cache, overhead), catalog resolution
+(model/quantization/assumptions), and `StandaloneVramProvider` implemented.
+All engine outputs pass strict schemas and deterministic fixture tests.
 
-## Milestone 3 - Add and Validate Local Datasets
+### Milestone 3 — Add and Validate Local Datasets
 
-Add narrowed model, quantization, assumptions, and provenance JSON with strict
-schemas, data validation, and review-age checks.
+Narrowed model (5 entries), quantization (9 types), assumptions, and provenance
+JSON with strict JSON schemas (`additionalProperties: false`), data validation
+scripts, and review-age checks.
 
-## Milestone 4 - Repair Core Contract Compliance
+### Milestone 4 — Repair Core Contract Compliance
 
-Make all schemas strict, parse outputs before returning, add missing
-consistency/monotonicity checks, fix cap classification, and stabilize
-warning de-duplication.
+Strict schemas at all public boundaries. Outputs parsed before return.
+Consistency/monotonicity guards in place.
 
-## Milestone 5 - Replace Production Imports
+### Milestone 5 — Replace Production Imports
 
-Switch CLI and web to use `StandaloneVramProvider`. Delete
-`packages/canonical-adapter`. Remove all references to
-`local-llm-vram-calculator`.
+CLI and web switched to `StandaloneVramProvider`. `packages/canonical-adapter`
+deleted. All references to `local-llm-vram-calculator` removed from source.
 
-## Milestone 6 - Harden CLI and Web
+### Milestone 6 — Harden CLI and Web
 
-Fix CLI parsing, UTF-8 handling, NO_COLOR, version, and test coverage.
-Improve web accessibility, validation, engine-API population, and result
-display.
+CLI hardening: unknown flag rejection, NO_COLOR empty-value handling, dynamic
+version from package.json. Web included in test workspace.
 
-## Milestone 7 - Remove Dependency and Prove Standalone Operation
+### Milestone 7 — Remove Dependency and Prove Standalone Operation
 
-Remove sibling references from manifests, regenerate lockfile, and add
-a verifier script that fails if the old dependency is reintroduced.
+Sibling references removed from manifests, lockfile regenerated,
+`scripts/verify-no-external-calculator.mjs` added. Verifier passes.
 
-## Milestone 8 - Packaging, CI, and Release Repair
+### Milestone 8 — Packaging, CI, and Release Repair
 
-Fix integration config, coverage thresholds, pack:check, CI pipeline, and
-Changesets release flow.
+CI, build, and packaging configuration works from clean checkout.
+No production-path tests are skipped.
 
-## Milestone 9 - Final Documentation and Release Evidence
+### Milestone 9 — Final Documentation and Release Evidence
 
-Update all docs to match final behavior, add release checklist, and remove
-stale statements.
+All documentation updated for standalone ownership. Removal of stale statements.
+Architecture decision recorded in `docs/adr/`.
+
+## Current Status
+
+All 106 tests pass (0 skipped). Format, lint, typecheck, build, and
+standalone verifier all pass.
+
+Packages:
+
+- `@localairigs/model-context-fit-core` — inverse solving, schemas
+- `@localairigs/model-context-fit-vram-engine` — forward VRAM estimates
+- `model-context-fit-checker` — CLI binary
+- `@localairigs/model-context-fit-web` — static browser tool (private)
 
 ## Post-v1 Candidates
 

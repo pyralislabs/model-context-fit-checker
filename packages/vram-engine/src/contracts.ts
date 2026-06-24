@@ -12,13 +12,15 @@ export type RuntimeProfileId = z.infer<typeof RuntimeProfileId>;
 export const KvCacheDtype = z.enum(["fp16", "bf16", "fp32", "q8_0", "q4_0"]);
 export type KvCacheDtype = z.infer<typeof KvCacheDtype>;
 
-export const StandaloneForwardRequestSchema = z.object({
-  model: z.string().min(1),
-  quantization: z.string().min(1),
-  contextTokens: z.number().int().positive().safe(),
-  runtimeProfile: RuntimeProfileId.optional().default("balanced"),
-  kvCacheDtype: KvCacheDtype.optional().default("fp16"),
-}).strict();
+export const StandaloneForwardRequestSchema = z
+  .object({
+    model: z.string().min(1),
+    quantization: z.string().min(1),
+    contextTokens: z.number().int().positive().safe(),
+    runtimeProfile: RuntimeProfileId.optional().default("balanced"),
+    kvCacheDtype: KvCacheDtype.optional().default("fp16"),
+  })
+  .strict();
 
 export type StandaloneForwardRequest = z.infer<typeof StandaloneForwardRequestSchema>;
 
@@ -46,6 +48,7 @@ export type StandaloneForwardEstimate = z.infer<typeof StandaloneForwardEstimate
 
 export const ModelRecordSchema = z.object({
   id: z.string().min(1),
+  aliases: z.array(z.string()),
   displayName: z.string().min(1),
   family: z.string().min(1),
   parameterCount: z.number().int().positive().safe(),

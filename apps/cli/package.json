@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@localairigs/model-context-fit-core": "workspace:*",
-    "@localairigs/model-context-fit-canonical-adapter": "workspace:*"
+    "@localairigs/model-context-fit-vram-engine": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

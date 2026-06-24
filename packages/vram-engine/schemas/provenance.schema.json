@@ -12,8 +12,14 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "id", "publisher", "title", "url", "accessedAt",
-          "license", "usageNote", "appliesTo"
+          "id",
+          "publisher",
+          "title",
+          "url",
+          "accessedAt",
+          "license",
+          "usageNote",
+          "appliesTo"
         ],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
@@ -25,7 +31,10 @@
           "usageNote": { "type": "string", "minLength": 1 },
           "appliesTo": {
             "type": "array",
-            "items": { "type": "string", "enum": ["models", "quantizations", "assumptions"] },
+            "items": {
+              "type": "string",
+              "enum": ["models", "quantizations", "assumptions"]
+            },
             "minItems": 1
           }
         }

@@ -4,8 +4,12 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "version", "formulaIds", "parallelSequences",
-    "runtimeProfiles", "kvCacheDtypes", "assumptionLines"
+    "version",
+    "formulaIds",
+    "parallelSequences",
+    "runtimeProfiles",
+    "kvCacheDtypes",
+    "assumptionLines"
   ],
   "properties": {
     "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
@@ -20,8 +24,11 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "fixedGiB", "minimumComputeGiB", "weightBufferFraction",
-          "minimumSafetyGiB", "safetyFraction"
+          "fixedGiB",
+          "minimumComputeGiB",
+          "weightBufferFraction",
+          "minimumSafetyGiB",
+          "safetyFraction"
         ],
         "properties": {
           "fixedGiB": { "type": "number", "minimum": 0 },

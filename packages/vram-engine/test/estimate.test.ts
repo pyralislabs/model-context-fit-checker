@@ -12,7 +12,11 @@ describe("estimateRequiredVram", () => {
     expect(Number.isSafeInteger(result.requiredVramBytes)).toBe(true);
     expect(result.requiredVramBytes).toBeGreaterThan(0);
     expect(Object.keys(result.breakdownBytes)).toEqual([
-      "weights", "kvCache", "runtimeFixed", "computeBuffer", "safetyMargin",
+      "weights",
+      "kvCache",
+      "runtimeFixed",
+      "computeBuffer",
+      "safetyMargin",
     ]);
     expect(result.assumptions.length).toBeGreaterThan(0);
     expect(result.metadata.packageName).toBeTruthy();

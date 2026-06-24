@@ -6,10 +6,10 @@ import type {
   NormalizedContextFitInputV1,
   ContextFitResultV1,
 } from "@localairigs/model-context-fit-core";
-import { LocalLlmVramProvider } from "@localairigs/model-context-fit-canonical-adapter";
+import { StandaloneVramProvider } from "@localairigs/model-context-fit-vram-engine";
 import { renderResult, renderError, renderLoading, clearResult } from "./render.js";
 
-const provider = new LocalLlmVramProvider();
+const provider = new StandaloneVramProvider();
 
 function getFormData(form: HTMLFormElement): Record<string, unknown> {
   const data: Record<string, unknown> = {

@@ -20,7 +20,9 @@ export function computeKvCacheBytes(
   parallelSequences: number,
 ): number {
   if (!isPositiveSafeInteger(contextTokens)) {
-    throw invalidNumericInput(`contextTokens must be a positive safe integer, got ${contextTokens}`);
+    throw invalidNumericInput(
+      `contextTokens must be a positive safe integer, got ${contextTokens}`,
+    );
   }
   if (!isPositiveSafeInteger(layers)) {
     throw invalidNumericInput(`layers must be a positive safe integer, got ${layers}`);
@@ -31,11 +33,19 @@ export function computeKvCacheBytes(
   if (!isPositiveSafeInteger(headDim)) {
     throw invalidNumericInput(`headDim must be a positive safe integer, got ${headDim}`);
   }
-  if (typeof kvElementBytes !== "number" || !Number.isFinite(kvElementBytes) || kvElementBytes <= 0) {
-    throw invalidNumericInput(`kvElementBytes must be positive and finite, got ${kvElementBytes}`);
+  if (
+    typeof kvElementBytes !== "number" ||
+    !Number.isFinite(kvElementBytes) ||
+    kvElementBytes <= 0
+  ) {
+    throw invalidNumericInput(
+      `kvElementBytes must be positive and finite, got ${kvElementBytes}`,
+    );
   }
   if (!isPositiveSafeInteger(parallelSequences)) {
-    throw invalidNumericInput(`parallelSequences must be a positive safe integer, got ${parallelSequences}`);
+    throw invalidNumericInput(
+      `parallelSequences must be a positive safe integer, got ${parallelSequences}`,
+    );
   }
 
   const step1 = contextTokens * layers;
@@ -60,7 +70,9 @@ export function computeKvCacheBytes(
 
   const step5 = step4 * kvElementBytes;
   if (!Number.isSafeInteger(step5)) {
-    throw invalidNumericInput("Overflow: contextTokens * layers * kvHeads * headDim * 2 * kvElementBytes");
+    throw invalidNumericInput(
+      "Overflow: contextTokens * layers * kvHeads * headDim * 2 * kvElementBytes",
+    );
   }
 
   const product = step5 * parallelSequences;

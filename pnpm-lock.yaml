@@ -32,12 +32,12 @@ importers:
 
   apps/cli:
     dependencies:
-      '@localairigs/model-context-fit-canonical-adapter':
-        specifier: workspace:*
-        version: link:../../packages/canonical-adapter
       '@localairigs/model-context-fit-core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@localairigs/model-context-fit-vram-engine':
+        specifier: workspace:*
+        version: link:../../packages/vram-engine
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
@@ -51,12 +51,12 @@ importers:
 
   apps/web:
     dependencies:
-      '@localairigs/model-context-fit-canonical-adapter':
-        specifier: workspace:*
-        version: link:../../packages/canonical-adapter
       '@localairigs/model-context-fit-core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@localairigs/model-context-fit-vram-engine':
+        specifier: workspace:*
+        version: link:../../packages/vram-engine
     devDependencies:
       typescript:
         specifier: ~5.8.0
@@ -64,22 +64,6 @@ importers:
       vite:
         specifier: ^6.0.0
         version: 6.4.3(@types/node@22.20.0)
-      vitest:
-        specifier: ^3.1.0
-        version: 3.2.6(@types/node@22.20.0)
-
-  packages/canonical-adapter:
-    dependencies:
-      '@localairigs/model-context-fit-core':
-        specifier: workspace:*
-        version: link:../core
-      local-llm-vram-calculator:
-        specifier: file:../../../local-llm-vram-calculator
-        version: file:../local-llm-vram-calculator
-    devDependencies:
-      typescript:
-        specifier: ~5.8.0
-        version: 5.8.3
       vitest:
         specifier: ^3.1.0
         version: 3.2.6(@types/node@22.20.0)
@@ -943,11 +927,6 @@ packages:
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
-
-  local-llm-vram-calculator@file:../local-llm-vram-calculator:
-    resolution: {directory: ../local-llm-vram-calculator, type: directory}
-    engines: {node: '>=20.0.0'}
-    hasBin: true
 
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
@@ -2041,8 +2020,6 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
-
-  local-llm-vram-calculator@file:../local-llm-vram-calculator: {}
 
   locate-path@6.0.0:
     dependencies:

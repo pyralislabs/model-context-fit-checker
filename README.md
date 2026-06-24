@@ -72,17 +72,17 @@ Library ----/
 
 Documentation is in `docs/` and the project root:
 
-| Document                         | Purpose                       |
-| -------------------------------- | ----------------------------- |
-| `bootstrap.md`                   | Implementation contract       |
-| `docs/ARCHITECTURE.md`           | Component boundaries          |
-| `docs/VRAM_ENGINE_CONTRACT.md`   | VRAM engine contract          |
-| `docs/CODE_STANDARDS.md`         | TypeScript/code standards     |
-| `docs/ROADMAP.md`                | Milestones                    |
-| `docs/TESTING.md`                | Testing strategy              |
-| `docs/VRAM_ASSUMPTIONS.md`       | VRAM assumptions              |
-| `docs/DATASET_PROVENANCE.md`     | Dataset provenance            |
-| `AGENTS.md`                      | Agent instructions            |
+| Document                       | Purpose                   |
+| ------------------------------ | ------------------------- |
+| `bootstrap.md`                 | Implementation contract   |
+| `docs/ARCHITECTURE.md`         | Component boundaries      |
+| `docs/VRAM_ENGINE_CONTRACT.md` | VRAM engine contract      |
+| `docs/CODE_STANDARDS.md`       | TypeScript/code standards |
+| `docs/ROADMAP.md`              | Milestones                |
+| `docs/TESTING.md`              | Testing strategy          |
+| `docs/VRAM_ASSUMPTIONS.md`     | VRAM assumptions          |
+| `docs/DATASET_PROVENANCE.md`   | Dataset provenance        |
+| `AGENTS.md`                    | Agent instructions        |
 
 ## Backlinks And Attribution
 

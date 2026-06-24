@@ -1,16 +1,14 @@
-import assumptionsData from "../../data/assumptions.json" with { type: "json" };
+import assumptionsRaw from "../generated/assumptions.js";
 import type { RuntimeProfileValues, KvCacheDtypeInfo } from "../contracts.js";
 import { unknownRuntimeProfile, unknownKvCacheDtype } from "../errors.js";
 
-interface AssumptionsCatalog {
+const catalog = assumptionsRaw as {
   version: string;
   assumptionLines: string[];
   runtimeProfiles: Record<string, RuntimeProfileValues>;
   kvCacheDtypes: Record<string, KvCacheDtypeInfo>;
   parallelSequences: number;
-}
-
-const catalog = assumptionsData as unknown as AssumptionsCatalog;
+};
 
 export function getAssumptionVersion(): string {
   return catalog.version;
