@@ -13,7 +13,9 @@
   },
   "files": [
     "dist/",
-    "LICENSE"
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "!dist/**/*.map"
   ],
   "engines": {
     "node": ">=22.0.0"

@@ -76,6 +76,9 @@ for (const pkg of publicPackages) {
     }
 
     const expectedFiles = ["LICENSE", "package.json"];
+    if (pkg.name !== "model-context-fit-checker") {
+      expectedFiles.push("THIRD_PARTY_NOTICES.md");
+    }
     for (const expected of expectedFiles) {
       if (!files.some((f) => f.endsWith(expected))) {
         throw new Error(`${expected} not in tarball`);

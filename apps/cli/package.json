@@ -14,7 +14,8 @@
   },
   "files": [
     "dist/",
-    "LICENSE"
+    "LICENSE",
+    "!dist/**/*.map"
   ],
   "engines": {
     "node": ">=22.0.0"
