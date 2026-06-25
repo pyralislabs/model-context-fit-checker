@@ -9,6 +9,11 @@ const root = resolve(__dirname, "..");
 
 const dataDir = resolve(root, "data");
 const schemasDir = resolve(root, "schemas");
+const ajvPackageRoot = dirname(fileURLToPath(import.meta.resolve("ajv/package.json")));
+const draft7MetaSchemaPath = resolve(
+  ajvPackageRoot,
+  "dist/refs/json-schema-draft-07.json",
+);
 
 function loadJSON(filePath) {
   try {
@@ -38,6 +43,16 @@ console.log("Validating VRAM engine data files...\n");
 
 const ajv = new Ajv({ allErrors: true });
 addFormats(ajv);
+
+const draft7HttpsUri = "https://json-schema.org/draft-07/schema#";
+if (!ajv.getSchema(draft7HttpsUri)) {
+  const draft7MetaSchema = loadJSON(draft7MetaSchemaPath);
+  if (draft7MetaSchema) {
+    const cloned = JSON.parse(JSON.stringify(draft7MetaSchema));
+    cloned.$id = draft7HttpsUri;
+    ajv.addMetaSchema(cloned);
+  }
+}
 
 const validations = [
   { data: "models.json", schema: "model.schema.json", name: "Models" },
